@@ -1,0 +1,19 @@
+**/build/**
+**/bin/**
+**/.vscode/**
+
+# Node.js
+node_modules/
+package-lock.json
+
+# Tailwind output CSS
+dist/
+
+# IDE / OS
+.DS_Store
+.vscode/
+*.log
+
+# Optional: build cache
+*.cache
+.cache/

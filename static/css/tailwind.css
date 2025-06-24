@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+    --primary-color: #FFBB4E;
+    --primary-color-hover: #dda54b;
+    --secondary-color: #3B263E;
+}
+
+.button {
+    @apply bg-(--primary-color) text-center font-bold py-2 px-4 rounded text-(--secondary-color) hover:bg-(--primary-color-hover) hover:scale-105 transition-colors duration-300;
+}
+
+.flip-card {
+  perspective: 1000px;
+}
+
+.flip-inner {
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+}
+
+.flipped .flip-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-front,
+.flip-back {
+  backface-visibility: hidden;
+  position: absolute;
+  inset: 0;
+  border-radius: 0.5rem;
+}
+
+.flip-back {
+  transform: rotateY(180deg);
+}
+
+.name {
+  @apply border-b border-dotted border-gray-400 cursor-pointer hover:text-blue-600;
+}

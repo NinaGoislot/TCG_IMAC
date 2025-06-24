@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/output.css">
+    <script src="../static/js/main.js"></script>
+    <title>TCG IMAC</title>
+</head>
+
+<body class="flex flex-col justify-between bg-[url(../images/tapis.jpg)] bg-cover bg-center p-5 min-h-screen">
+    <div class="flex flex-col gap-15">
+        <nav class="flex justify-end gap-5">
+        {% if is_connected %}
+            <a href="/connexion" class="button">Connexion</a>
+        {% else %}
+            <a href="/deconnexion" class="button">Déconnexion</a>
+        {% endif %}
+        {% if is_admin %}
+            <a href="/cardManager" class="button">Manage cards</a>
+        {% endif %}
+    </nav>
+        <div class="mx-20">
+            <!-- Carte personnage -->
+            <article
+                class="group relative w-48 aspect-[257/364] rounded-lg shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300 ease-in-out"
+                onclick="toggleSkills(this)">
+                <img src="https://i.imgur.com/HWxOtcQ.jpeg"
+                    class="absolute inset-0 object-cover w-full h-full rounded-md" />
+
+                <!-- Vie -->
+                <p
+                    class="absolute z-10 -top-4 -right-4 bg-red-600 text-white text-sm font-bold rounded-full w-10 h-10 flex items-center justify-center shadow-lg">
+                    12
+                </p>
+
+                <!-- Nom -->
+                <figcaption
+                    class="absolute bottom-0 w-full bg-black/60 text-white text-center text-sm py-1 font-bold z-10 rounded-br-md rounded-bl-md">
+                    Frieren: Beyond Journey’s End
+                </figcaption>
+
+                <!-- Encadré compétences -->
+                <div data-skill-popup
+                    class="hidden absolute top-0 left-full ml-4 w-48 bg-white shadow-xl rounded p-2 text-sm z-20"
+                    onclick="event.stopPropagation()">
+                    <p class="font-bold mb-2">Compétences :</p>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li>Boule de feu</li>
+                        <li>Barrière magique</li>
+                        <li>Résistance mentale</li>
+                    </ul>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <p class="text-center italic text-white">Projet d'architecture web en IMAC 1 | by Nina GOISLOT | 23 juin 2025</p>
+</body>
+
+</html>

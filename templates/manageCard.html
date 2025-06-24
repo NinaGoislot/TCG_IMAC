@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/output.css">
+    <script src="../static/js/main.js"></script>
+    <title>TCG IMAC</title>
+</head>
+
+<body class="flex flex-col justify-between bg-[url(../images/tapis.jpg)] bg-cover bg-center p-5 min-h-screen">
+    <div class="flex flex-col gap-15">
+        <nav class="flex justify-end">
+            <nav class="flex justify-end gap-5">
+        {% if is_connected %}
+            <a href="/connexion" class="button">Connexion</a>
+        {% else %}
+            <a href="/deconnexion" class="button">Déconnexion</a>
+        {% endif %}
+    </nav>
+        </nav>
+        <div class="max-w-6xl mx-auto py-8 px-4">
+            <!-- Bouton de création -->
+            <div class="mb-4 flex justify-end">
+                <a href="card.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                    + Nouvelle carte
+                </a>
+            </div>
+
+            <!-- Tableau -->
+            <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+                <table class="min-w-full divide-y divide-gray-300">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                onclick="sortTable(0)">ID</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nom</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                onclick="sortTable(2)">Catégorie</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                onclick="sortTable(3)">PV</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                onclick="sortTable(4)">Créée</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 text-sm">
+                        <tr>
+                            <td class="px-4 py-2">001</td>
+                            <td class="px-4 py-2">
+                                <span
+                                    class="border-b border-dotted border-gray-400 cursor-pointer hover:text-blue-600">Frieren</span>
+                            </td>
+                            <td class="px-4 py-2">Mage</td>
+                            <td class="px-4 py-2">12</td>
+                            <td class="px-4 py-2">2025-06-01</td>
+                            <td class="px-4 py-2 space-x-2">
+                                <a href="card.html?id=001"
+                                    class="bg-yellow-400 hover:bg-yellow-500 text-white py-1 px-3 rounded">Modifier</a>
+                                <button onclick="deleteRow(this)"
+                                    class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded">Supprimer</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2">002</td>
+                            <td class="px-4 py-2">
+                                <span
+                                    class="border-b border-dotted border-gray-400 cursor-pointer hover:text-blue-600">Stark</span>
+                            </td>
+                            <td class="px-4 py-2">Guerrier</td>
+                            <td class="px-4 py-2">18</td>
+                            <td class="px-4 py-2">2025-06-10</td>
+                            <td class="px-4 py-2 space-x-2">
+                                <a href="card.html?id=002"
+                                    class="bg-yellow-400 hover:bg-yellow-500 text-white py-1 px-3 rounded">Modifier</a>
+                                <button onclick="deleteRow(this)"
+                                    class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded">Supprimer</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <p class="text-center italic text-white">Projet d'architecture web en IMAC 1 | by Nina GOISLOT | 23 juin
+                2025
+            </p>
+</body>
+
+</html>

@@ -1,11 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="../static/css/output.css">
+    <title>TCG IMAC</title>
 </head>
-<body>
-    Youhou
+
+<body class="flex flex-col justify-between bg-[url(../images/bg_cards.gif)] bg-cover p-5 min-h-screen">
+    <nav class="flex justify-end gap-5">
+        {% if is_connected %}
+        <a href="/deconnexion" class="button">Déconnexion</a>
+        {% else %}
+        <a href="/connexion" class="button">Connexion</a>
+        {% endif %}
+        {% if is_admin %}
+        <a href="/cardManager" class="button">Manage cards</a>
+        {% endif %}
+    </nav>
+    <div class="flex flex-col gap-5 justify-center items-center">
+        <h1 class="text-8xl m-10">TCG IMAC</h1>
+        <div class="flex flex-col items-center gap-5">
+            <a href="./booster.html" class="button w-full">Open booster</a>
+            <a href="" class="button w-full">Battle</a>
+            <div class="flex gap-5 w-full">
+                <a href="" class="button text-center w-1/2">Decks</a>
+                <a href="/templates/listCard.html" class="button text-center w-1/2">Cards</a>
+            </div>
+        </div>
+        {% if is_connected %}
+        <p>Bienvenue {{ pseudo }}</p>
+        {% endif %}
+    </div>
+
+    <p class="text-center italic">Projet d'architecture web en IMAC 1 | by Nina GOISLOT | 23 juin 2025</p>
 </body>
+
 </html>
