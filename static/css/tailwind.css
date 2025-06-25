@@ -3,11 +3,32 @@
 :root {
     --primary-color: #FFBB4E;
     --primary-color-hover: #dda54b;
-    --secondary-color: #3B263E;
+    --dark-color: #0D0A08;
+    --secondary-color: #631875;
+    --secondary-color-hover: #420c50;
 }
 
-.button {
-    @apply bg-(--primary-color) text-center font-bold py-2 px-4 rounded text-(--secondary-color) hover:bg-(--primary-color-hover) hover:scale-105 transition-colors duration-300;
+body {
+    @apply p-0 font-mono
+}
+
+main {
+    @apply flex flex-col justify-between p-5 min-h-screen;
+}
+
+.mentions {
+    @apply text-white text-center italic opacity-50;
+}
+.button-default {
+    @apply bg-(--primary-color) text-center font-bold py-2 px-4 rounded text-(--dark-color) hover:bg-(--primary-color-hover) hover:scale-105 transition-colors duration-300;
+}
+
+.button-action {
+    @apply text-center font-bold py-2 px-4 rounded text-white hover:scale-105 transition-colors duration-300 cursor-pointer;
+}
+
+.bg-default {
+    @apply bg-(--dark-color);
 }
 
 .flip-card {
@@ -38,3 +59,16 @@
 .name {
   @apply border-b border-dotted border-gray-400 cursor-pointer hover:text-blue-600;
 }
+
+.img-card {
+    @apply absolute inset-0 object-cover w-full h-full rounded-md
+}
+
+.card-not-obtained {
+    @apply grayscale opacity-50 brightness-75 contrast-75 cursor-not-allowed;
+}
+
+.input-default {
+    @apply bg-gray-400 rounded p-3  border border-gray-600 focus:outline-none focus:ring-2;
+}
+

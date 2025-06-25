@@ -1,7 +1,9 @@
 from flask import Flask,request,render_template,jsonify,abort,session
 import controller, model
+import os
 
-app = Flask(__name__)
+# app = Flask(__name__)
+app = Flask(__name__, template_folder=os.path.join(os.path.dirname(__file__), '..', 'templates'), static_folder=os.path.join(os.path.dirname(__file__), '..', 'static'))
 app.secret_key = "Ceci_est_une_cle_secrete"
 
 # @app.route("/")
@@ -32,6 +34,22 @@ def deconnexion():
 
 @app.route("/cardManager")
 def cardManager():
-    return controller.loggingOut()
+    return controller.goManageCard()
+
+@app.route("/cardManager/editCard/<int:id>")
+def editCard(id):
+    return controller.editCard(id)
+
+@app.route("/cardManager/editSkill/<int:id>")
+def editSkill(id):
+    return controller.editSkill(id)
+
+@app.route("/listCard")
+def listCard():
+    return controller.goMyCards()
+
+@app.route("/booster")
+def booster():
+    return controller.goBooster()
 
 

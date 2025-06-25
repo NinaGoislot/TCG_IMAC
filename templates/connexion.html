@@ -6,63 +6,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/output.css">
     <script src="../static/js/connexion.js"></script>
+    <script src="https://kit.fontawesome.com/6a27157276.js" crossorigin="anonymous"></script>
     <title>TCG IMAC</title>
 </head>
 
-<body class="flex flex-col justify-between bg-[url(../images/bg_cards.gif)] bg-cover p-5 min-h-screen">
-    <nav class="flex justify-end gap-5">
+<body class="bg-default ">
+    <main>
+        <nav class="flex justify-end gap-5"></nav>
+        <div class="flex flex-col items-center w-full justify-center gap-4">
+            <div class="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-lg">
+                <div class="flex mb-6 border-b border-gray-600">
+                    <button id="tab-signup"
+                        class="flex-1 text-center py-2 text-lg font-bold border-b-2 text-gray-100 border-(--secondary-color) cursor-pointer">S'inscrire</button>
+                    <button id="tab-login"
+                        class="flex-1 text-center py-2 text-lg font-bold border-b-2 border-transparent text-gray-100 text-gray-400 hover:text-white cursor-pointer">Se
+                        connecter</button>
+                </div>
 
-    </nav>
-    <div class="flex flex-col items-center w-full justify-center gap-4">
-        <div class="bg-gray-800 p-8 rounded-lg shadow-md w-full max-w-lg">
-            <div class="flex mb-6 border-b border-gray-600">
-                <button id="tab-signup"
-                    class="flex-1 text-center py-2 text-lg font-bold border-b-2 text-gray-100 border-green-500 cursor-pointer">S'inscrire</button>
-                <button id="tab-login"
-                    class="flex-1 text-center py-2 text-lg font-bold border-b-2 border-transparent text-gray-100 text-gray-400 hover:text-white cursor-pointer">Se
-                    connecter</button>
-            </div>
+                <!-- Formulaire d'inscription -->
+                <div id="signup-form" class="space-y-4">
+                    <h2 class="text-xl font-semibold text-center text-gray-100">Créer un compte</h2>
+                    <form method="post" action="/connexion/createAccount" class="flex flex-col gap-4">
+                        <div class="flex gap-4">
+                            <input type="text" placeholder="Identifiant" name="id_user" required
+                                class="w-1/2 input-default focus:ring-(--secondary-color)">
+                            <input type="text" placeholder="Pseudo" name="pseudo_user" required
+                                class="w-1/2 input-default focus:ring-(--secondary-color)">
+                        </div>
+                        <input type="password" placeholder="Mot de passe" name="mdp_user" required
+                            class="w-full input-default focus:ring-(--secondary-color)">
+                        <input type="password" placeholder="Confirmer le mot de passe" name="mdp_user_2" required
+                            class="w-full input-default focus:ring-(--secondary-color)">
+                        <input type="submit" value="Créer un compte"
+                            class="w-full bg-(--secondary-color) hover:bg-(--secondary-color-hover) button-action">
+                    </form>
+                </div>
 
-            <!-- Formulaire d'inscription -->
-            <div id="signup-form" class="space-y-4">
-                <h2 class="text-xl font-semibold text-center text-gray-100">Créer un compte</h2>
-                <form method="post" action="/connexion/createAccount" class="flex flex-col gap-4">
-                    <div class="flex gap-4">
-                        <input type="text" placeholder="Identifiant" name="id_user" required
-                            class="w-1/2 p-3 bg-gray-400 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <input type="text" placeholder="Pseudo" name="pseudo_user" required
-                            class="w-1/2 p-3 bg-gray-400 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    </div>
-                    <input type="password" placeholder="Mot de passe" name="mdp_user" required
-                        class="w-full p-3 bg-gray-400 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <input type="password" placeholder="Confirmer le mot de passe" name="mdp_user_2" required
-                        class="w-full p-3 bg-gray-400 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    <input type="submit" value="Créer un compte"
-                        class="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded font-bold transition cursor-pointer">
-                </form>
+                <!-- Formulaire de connexion -->
+                <div id="login-form" class="space-y-4 hidden">
+                    <h2 class="text-xl font-semibold text-center text-gray-100">Connexion</h2>
+                    <form method="post" action="/connexion/accessAccount" class="flex flex-col gap-4">
+                        <input type="text" placeholder="Identifiant" name="id_user"
+                            class="w-full input-default focus:ring-(--primary-color)">
+                        <input type="password" placeholder="Mot de passe" name="mdp_user"
+                            class="w-full input-default focus:ring-(--primary-color)">
+                        <div class="text-right text-sm text-gray-400 hover:text-white">
+                            <a href="#" onclick="trollMdpForget()">Mot de passe oublié ?</a>
+                        </div>
+                        <input type="submit" value="Se connecter"
+                            class="w-full bg-(--primary-color) hover:bg-(--primary-color-hover) button-action">
+                    </form>
+                </div>
             </div>
-
-            <!-- Formulaire de connexion -->
-            <div id="login-form" class="space-y-4 hidden">
-                <h2 class="text-xl font-semibold text-center text-gray-100">Connexion</h2>
-                <form method="post" action="/connexion/accessAccount" class="flex flex-col gap-4">
-                    <input type="text" placeholder="Identifiant" name="id_user"
-                        class="w-full p-3 bg-gray-400 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <input type="password" placeholder="Mot de passe" name="mdp_user"
-                        class="w-full p-3 bg-gray-400 rounded border border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <div class="text-right text-sm text-gray-400 hover:text-white">
-                        <a href="#" onclick="trollMdpForget()">Mot de passe oublié ?</a>
-                    </div>
-                    <input type="submit" value="Se connecter"
-                        class="w-full bg-blue-500 hover:bg-blue-600 text-white py-3 rounded font-bold transition cursor-pointer">
-                </form>
-            </div>
+            {% if session["message"] %}
+            <p class="bg-red-400 rounded p-3 italic">{{ session["message"] }} </p>
+            {% endif %}
         </div>
-        {% if message != "" %}
-        <p class="bg-red-400 rounded p-5 italic">message</p>
-        {% endif %}
-    </div>
-    <p class="text-center italic">Projet d'architecture web en IMAC 1 | by Nina GOISLOT | 23 juin 2025</p>
+        <p class="mentions">Projet d'architecture web en IMAC 1 | by Nina GOISLOT | 23 juin 2025</p>
+    </main>
 </body>
 
 </html>

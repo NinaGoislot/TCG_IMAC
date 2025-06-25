@@ -1,4 +1,4 @@
-from flask import Flask,request,render_template,jsonify,abort,session
+from flask import Flask,request,render_template,jsonify,abort,session, redirect
 import model
 
 userConnected = 0
@@ -9,35 +9,30 @@ message = ""
 # *************************************************
 
 def goHome():
-    is_connected = session.get("is_connected", False)
-    is_admin = session.get("is_admin", False)
-    pseudo = session.get("pseudo", "")
-    session["message"] = ""
-
-    
-    return render_template('index.html', is_connected=is_connected, is_admin=is_admin, pseudo=pseudo)
+    session.pop('message', default=None)
+    return render_template('index.html')
 
 def goBooster():
     return render_template('booster.html')
 
 def goConnexion():
-    return render_template('connexion.html', message=session.get("message", ""))
+    return render_template('connexion.html')
 
 def goMyCards():
-    is_connected = session.get("is_connected", False)
-    is_admin = session.get("is_admin", False)
-
-    return render_template('listCard.html', is_connected=is_connected, is_admin=is_admin)
+    cards = model.get_all_cards(session["user_id"])
+    return render_template('listCard.html', cards=cards)
 
 def goManageCard():
-    is_connected = session.get("is_connected", False)
-
-    return render_template('manageCard.html', is_connected=is_connected)
+    cards = model.get_all_cards()
+    skills = model.get_all_skills()
+    return render_template('manageCard.html', cards=cards, skills=skills)
 
 
 # *************************************************
 # ******************* FUNCTIONS *******************
 # *************************************************
+
+# ************ Connexion / Inscription ************
 
 def setAccount(data):
     global message
@@ -81,8 +76,22 @@ def coUser(data):
     session["is_admin"] = isAdmin
     session["is_connected"] = True
     session["message"] = "Connexion réussie !"
-    return goHome()
+    return redirect("/", code=302)
 
 def loggingOut():
-    session["is_connected"] = False
-    return goHome()
+    session.pop('is_connected', default=None)
+    session.pop('pseudo', default=None)
+    session.pop('is_admin', default=None)
+    session.pop('user_id', default=None)
+    return redirect("/", code=302)
+
+
+# ************ CardManager ************
+
+def editCard(id):
+    card = model.getCardById(id)
+    skills = model.get_all_skills()
+    rarities = model.get_all_rarities()
+    categories = model.get_all_categories()
+
+    return render_template('one_card.html', card=card, skills=skills, rarities=rarities,categories=categories)

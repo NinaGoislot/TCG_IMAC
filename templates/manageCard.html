@@ -6,85 +6,127 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/output.css">
     <script src="../static/js/main.js"></script>
+    <script src="https://kit.fontawesome.com/6a27157276.js" crossorigin="anonymous"></script>
     <title>TCG IMAC</title>
 </head>
 
-<body class="flex flex-col justify-between bg-[url(../images/tapis.jpg)] bg-cover bg-center p-5 min-h-screen">
-    <div class="flex flex-col gap-15">
+<body class="bg-default ">
+    <main class="">
         <nav class="flex justify-end">
             <nav class="flex justify-end gap-5">
-        {% if is_connected %}
-            <a href="/connexion" class="button">Connexion</a>
-        {% else %}
-            <a href="/deconnexion" class="button">Déconnexion</a>
-        {% endif %}
-    </nav>
+                {% if session["is_connected"] %}
+                <a href="/deconnexion" class="button-default" title="Se déconnecter"><i
+                        class="fa-solid fa-right-from-bracket"></i></a>
+                {% else %}
+                <a href="/connexion" class="button-default">Connexion</a>
+                {% endif %}
+            </nav>
         </nav>
-        <div class="max-w-6xl mx-auto py-8 px-4">
-            <!-- Bouton de création -->
-            <div class="mb-4 flex justify-end">
-                <a href="card.html" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
-                    + Nouvelle carte
-                </a>
-            </div>
 
-            <!-- Tableau -->
-            <div class="overflow-x-auto bg-white shadow-md rounded-lg">
-                <table class="min-w-full divide-y divide-gray-300">
+        <div class="flex justify-center">
+            <div class="w-1/2 max-w-6xl py-8 px-4">
+                <!-- Bouton de création -->
+                <div class="mb-4 flex justify-end">
+                    <a href="card.html" class="bg-(--secondary-color) hover:bg-(--secondary-color-hover) font-semibold button-action">
+                        + Nouvelle carte
+                    </a>
+                </div>
+
+                <!-- Tableau -->
+                <table class="min-w-full divide-y divide-gray-300 bg-white shadow-md rounded-lg">
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(0)">ID</th>
+                                onclick="sortTable(0)">ID <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nom</th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(2)">Catégorie</th>
+                                onclick="sortTable(2)">Catégorie <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(3)">PV</th>
+                                onclick="sortTable(3)">PV <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(4)">Créée</th>
+                                onclick="sortTable(4)">Créée <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200 text-sm">
-                        <tr>
-                            <td class="px-4 py-2">001</td>
+                        {% for card in cards %}
+                        <tr class="">
+                            <td class="px-4 py-2">{{ card.id_card }}</td>
                             <td class="px-4 py-2">
                                 <span
-                                    class="border-b border-dotted border-gray-400 cursor-pointer hover:text-blue-600">Frieren</span>
+                                    class="border-b border-dotted border-gray-400 cursor-pointer hover:text-blue-600">{{card.name_card}}</span>
                             </td>
-                            <td class="px-4 py-2">Mage</td>
-                            <td class="px-4 py-2">12</td>
-                            <td class="px-4 py-2">2025-06-01</td>
-                            <td class="px-4 py-2 space-x-2">
-                                <a href="card.html?id=001"
-                                    class="bg-yellow-400 hover:bg-yellow-500 text-white py-1 px-3 rounded">Modifier</a>
-                                <button onclick="deleteRow(this)"
-                                    class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded">Supprimer</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="px-4 py-2">002</td>
-                            <td class="px-4 py-2">
-                                <span
-                                    class="border-b border-dotted border-gray-400 cursor-pointer hover:text-blue-600">Stark</span>
-                            </td>
-                            <td class="px-4 py-2">Guerrier</td>
-                            <td class="px-4 py-2">18</td>
-                            <td class="px-4 py-2">2025-06-10</td>
-                            <td class="px-4 py-2 space-x-2">
-                                <a href="card.html?id=002"
-                                    class="bg-yellow-400 hover:bg-yellow-500 text-white py-1 px-3 rounded">Modifier</a>
-                                <button onclick="deleteRow(this)"
-                                    class="bg-red-500 hover:bg-red-600 text-white py-1 px-3 rounded">Supprimer</button>
+                            <td class="px-4 py-2">{{ card.category }}</td>
+                            <td class="px-4 py-2">{{ card.pv_card }}</td>
+                            <td class="px-4 py-2">{{ card.date_release }}</td>
+                            <td class="flex px-4 py-2 space-x-2">
+                                <a href="/cardManager/editCard/{{ card.id_card }}" title="Modifier la carte"
+                                    class="bg-yellow-400 hover:bg-yellow-500 flex-1 button-action"><i
+                                        class="fa-solid fa-pen"></i></a>
+                                <button onclick="deleteRow(this)" title="Supprimer la carte"
+                                    class="bg-red-500 hover:bg-red-600 flex-1 button-action"><i
+                                        class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
 
-            <p class="text-center italic text-white">Projet d'architecture web en IMAC 1 | by Nina GOISLOT | 23 juin
-                2025
-            </p>
+            <div class="w-1/2 max-w-6xl py-8 px-4">
+                <!-- Bouton de création -->
+                <div class="mb-4 flex justify-end">
+                    <a href="card.html" class="bg-(--secondary-color) hover:bg-(--secondary-color-hover) font-semibold button-action">
+                        + Nouvelle compétence
+                    </a>
+                </div>
+
+                <!-- Tableau -->
+                <table class="min-w-full divide-y divide-gray-300 bg-white shadow-md rounded-lg">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                onclick="sortTable(0)">ID <i class="fa-solid fa-sort"></i></th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nom</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                onclick="sortTable(3)">Desription <i class="fa-solid fa-sort"></i></th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                onclick="sortTable(4)">Puissance <i class="fa-solid fa-sort"></i></th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                onclick="sortTable(4)">Coût <i class="fa-solid fa-sort"></i></th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 text-sm">
+                        {% for skill in skills %}
+                        <tr class="">
+                            <td class="px-4 py-2">{{ skill.id_skill }}</td>
+                            <td class="px-4 py-2">
+                                <span
+                                    class="border-b border-dotted border-gray-400 cursor-pointer hover:text-blue-600">{{skill.name_skill}}</span>
+                            </td>
+                            <td class="px-4 py-2">{{ skill.desc_skill }}</td>
+                            <td class="px-4 py-2">{{ skill.power_skill }}</td>
+                            <td class="px-4 py-2">{{ skill.e_cost_skill }}</td>
+                            <td class="flex px-4 py-2 space-x-2">
+                                <a href="/cardManager/editSkill/{{ skill.id_skill }}" title="Modifier la carte"
+                                    class="bg-yellow-400 hover:bg-yellow-500 flex-1 button-action"><i
+                                        class="fa-solid fa-pen"></i></a>
+                                <button onclick="deleteRow(this)" title="Supprimer la carte"
+                                    class="bg-red-500 hover:bg-red-600 flex-1 button-action"><i
+                                        class="fa-solid fa-trash"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p class="mentions">Projet d'architecture web en IMAC 1 | by Nina GOISLOT | 23 juin
+            2025
+        </p>
+    </main>
 </body>
 
 </html>

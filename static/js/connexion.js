@@ -5,22 +5,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginForm = document.getElementById("login-form");
 
   signupTab.addEventListener("click", () => {
-    signupTab.classList.add("border-green-500", "text-white");
-    signupTab.classList.remove("text-gray-400");
+    signupTab.classList.add("border-(--secondary-color)", "text-white");
+    signupTab.classList.remove("text-gray-400", "border-transparent");
 
-    loginTab.classList.remove("border-green-500", "text-white");
-    loginTab.classList.add("text-gray-400");
+    loginTab.classList.remove("border-(--primary-color)", "text-white");
+    loginTab.classList.add("text-gray-400", "border-transparent");
 
     signupForm.classList.remove("hidden");
     loginForm.classList.add("hidden");
   });
 
   loginTab.addEventListener("click", () => {
-    loginTab.classList.add("border-green-500", "text-white");
-    loginTab.classList.remove("text-gray-400");
+    loginTab.classList.add("border-(--primary-color)", "text-white");
+    loginTab.classList.remove("text-gray-400", "border-transparent");
 
-    signupTab.classList.remove("border-green-500", "text-white");
-    signupTab.classList.add("text-gray-400");
+    signupTab.classList.remove("border-(--secondary-color)", "text-white");
+    signupTab.classList.add("text-gray-400", "border-transparent");
 
     signupForm.classList.add("hidden");
     loginForm.classList.remove("hidden");
