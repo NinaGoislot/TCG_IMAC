@@ -17,7 +17,7 @@ def get_card(id):
     
     card["date_release"] = card["date_release"].strftime("%Y-%m-%d")
     
-    skills = model.get_all_skills()
+    skills = model.get_skills_assigned_card(id)
     rarities = model.get_all_rarities()
     categories = model.get_all_categories()
 
@@ -71,7 +71,16 @@ def get_all_cards():
 def get_all_skills():
     skills = model.get_all_skills()
 
-    print("Coucou")
+    if not skills:
+        return jsonify({"error": "skills not found"}), 404
+
+    return jsonify(skills)
+
+
+@api_app.route("/skillsAssigned/<int:id>", methods=["GET"])
+def get_skills_assigned_card(id):
+    skills = model.get_skills_assigned_card(id)
+
     if not skills:
         return jsonify({"error": "skills not found"}), 404
 
@@ -88,10 +97,11 @@ def update_card(id):
     name = data.get("name_card")
     pv = int(data.get("pv_card"))
     img = data.get("image_card")
-    cat = int(data.get("category"))
-    rar = int(data.get("rarity"))
+    cat = data.get("id_cat")
+    rar = data.get("id_rarity")
+    skill_ids = data.get("skills", [])
 
-    model.updateCard(id, name, pv, img, cat, rar)
+    model.updateCard(id, name, pv, img, cat, rar, skill_ids)
     return jsonify({"message": "Carte mise à jour"})
 
 @api_app.route("/skill/<int:id>", methods=["PUT"])
@@ -118,10 +128,11 @@ def add_Card():
     name = data.get("name_card")
     pv = data.get("pv_card")
     img = data.get("image_card")
-    cat = data.get("category")
-    rar = data.get("rarity")
+    cat = data.get("id_cat")
+    rar = data.get("id_rarity")
+    skill_ids = data.get("skills", [])
 
-    addedCard = model.createCard(name, pv, img, cat, rar)
+    addedCard = model.createCard(name, pv, img, cat, rar, skill_ids)
     addedCard["date_release"] = addedCard["date_release"].strftime("%Y-%m-%d")
     
     return jsonify(addedCard)

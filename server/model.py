@@ -108,7 +108,15 @@ def get_all_skills(id = None):
 
     skills = mycursor.fetchall()
 
-    print("Données récupérées :", skills)
+    return skills
+
+def get_skills_assigned_card(id):
+    # Je récupère les skills d'un outilisateur
+    sql = "SELECT s.*, (s_c.id_card IS NOT NULL) AS assigned FROM skill AS s LEFT JOIN skillPercard AS s_c ON s.id_skill = s_c.id_skill AND s_c.id_card = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+
+    skills = mycursor.fetchall()
 
     return skills
 
@@ -124,7 +132,9 @@ def get_all_categories():
     rarities = mycursor.fetchall()
     return rarities
 
-# ************ CREATE ************
+# *************************************************
+# ******************** CREATE *********************
+# *************************************************
 
 def createUser(id, username, password):
     sql = "INSERT INTO user (id_user, pseudo_user, mdp_user) VALUES (%s, %s, %s)"
@@ -132,7 +142,8 @@ def createUser(id, username, password):
     mycursor.execute(sql, val)
     mydb.commit()
 
-def createCard(name, pv, img, cat, rar):
+def createCard(name, pv, img, cat, rar, skill_ids):
+    # Créationd e la carte
     sql = "INSERT INTO card (name_card, pv_card, image_card, id_cat, id_rarity, date_release) VALUES (%s, %s, %s, %s, %s, NOW())"
     val = (name, pv, img, cat, rar)
     mycursor.execute(sql, val)
@@ -140,10 +151,20 @@ def createCard(name, pv, img, cat, rar):
 
     last_id = mycursor.lastrowid
 
+    # Insertion des nouvelles compétences
+    for skill_id in skill_ids:
+        sql = "INSERT INTO skillPercard (id_card, id_skill) VALUES (%s, %s)"
+        val = (last_id, int(skill_id))
+        mycursor.execute(sql, val)
+
+    mydb.commit()
+
     sql = "SELECT c.*, cat.nom_cat AS category FROM card c LEFT JOIN category cat ON c.id_cat = cat.id_cat WHERE c.id_card = %s"
     val = (last_id,)
     mycursor.execute(sql, val)
     added_card = mycursor.fetchone()
+
+
 
     return added_card
 
@@ -164,12 +185,28 @@ def createBooster():
     mycursor.execute(sql)
     allRarity = mycursor.fetchall()
 
-# ************ UPDATE ************
+# *************************************************
+# ******************** UPDATE *********************
+# *************************************************
 
-def updateCard(id, name, pv, img, cat, rar):
-    sql = "UPDATE card SET name_card = %s, pv_card = %s, image_card = %s, id_rarity = %s, id_cat = %s WHERE id_card = %s"
+def updateCard(id, name, pv, img, cat, rar, skill_ids):
+
+    # Update de la card 
+    sql = "UPDATE card SET name_card = %s, pv_card = %s, image_card = %s, id_cat = %s , id_rarity = %s WHERE id_card = %s"
     val = (name, pv, img, cat, rar, id)
     mycursor.execute(sql, val)
+
+    # Delete de tous les skills associés à cette card
+    sql = "DELETE FROM skillPercard WHERE id_card = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+
+    # Insertion des nouvelles compétences
+    for skill_id in skill_ids:
+        sql = "INSERT INTO skillPercard (id_card, id_skill) VALUES (%s, %s)"
+        val = (id, int(skill_id))
+        mycursor.execute(sql, val)
+
     mydb.commit()
 
 def updateSkill(id, name, desc, pow, cost):
@@ -179,7 +216,9 @@ def updateSkill(id, name, desc, pow, cost):
     mydb.commit()
 
 
-# ************ DELETE ************
+# *************************************************
+# ******************** DELETE *********************
+# *************************************************
 
 def deleteCard(id):
     # Les delete on cascade sont activés

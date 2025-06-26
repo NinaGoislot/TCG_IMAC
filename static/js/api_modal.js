@@ -13,7 +13,7 @@
         register(`GET : Récupération de la carte ${cardId}`, response.status);
 
         const data = await response.json();
-        displayEditCardForm(data.card, data.categories, data.rarities, cardId);
+        displayEditCardForm(data.card, data.categories, data.rarities, cardId, data.skills);
     }
 
     async function openEditSkill(skillId) {
@@ -53,15 +53,35 @@
 
         const rars = await response2.json();
 
-        displayNewCardForm(cats, rars);
+        const response3 = await fetch(`/api/skills`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+
+        register(`GET : Récupération des compétences`, response2.status);
+
+        const skills = await response3.json();
+
+        displayNewCardForm(cats, rars, skills);
     }
 
     // *************************************************
     // ********************** PUT **********************
     // *************************************************
 
-    async function updateCard(cardId, formData) {
-        const data = Object.fromEntries(formData.entries());
+    async function updateCard(cardId, formData, selectedSkills) {
+        const data = {
+            name_card: formData.get("name_card"),
+            pv_card: formData.get("pv_card"),
+            image_card: formData.get("image_card"),
+            id_cat: formData.get("category"),
+            nom_cat: formData.get("nom_cat"),
+            id_rarity: formData.get("rarity"),
+            date_release: formData.get("date_release"),
+            skills: selectedSkills
+        };
 
         const response = await fetch(`/api/card/${cardId}`, {
             method: 'PUT',
@@ -108,8 +128,15 @@
     // ********************* POST **********************
     // *************************************************
 
-    async function addCard(formData) {
-        const data = Object.fromEntries(formData.entries());
+    async function addCard(formData, selectedSkills) {
+        const data = {
+            name_card: formData.get("name_card"),
+            pv_card: formData.get("pv_card"),
+            image_card: formData.get("image_card"),
+            id_cat: formData.get("category"),
+            id_rarity: formData.get("rarity"),
+            skills: selectedSkills
+        };
 
         const response = await fetch(`/api/card`, {
             method: 'POST',
@@ -200,7 +227,7 @@
     // ******************* FUNCTION ********************
     // *************************************************
 
-    function displayEditCardForm(card, categories, rarities, cardId) {
+    function displayEditCardForm(card, categories, rarities, cardId, skills) {
         const modalBody = document.querySelector("#modal-manager .modal-body");
 
         modalBody.innerHTML = `
@@ -224,8 +251,6 @@
                         }
                         return ''; 
                     }).join('')}
-                    <input type="text" name="date_release" class="hidden"
-                            value="${card.date_release ?? ''}">
                     <div>
                         <label for="name_card">Nom de la carte</label>
                         <input type="text" name="name_card" placeholder="Nom"
@@ -264,6 +289,26 @@
                         </select>
                     </div>
 
+                    <div>
+                        <label>Compétences</label>
+                        <div class="space-y-2 max-h-64 overflow-y-auto border p-2 rounded">
+                            ${skills.map(skill => `
+                                <div class="p-2 border rounded shadow-sm bg-gray-50">
+                                    <label class="flex items-start space-x-2">
+                                        <input type="checkbox" name="skills" value="${skill.id_skill}" ${skill.assigned ? 'checked' : ''} class="mt-1">
+                                        <div>
+                                            <strong>${skill.name_skill}</strong>
+                                            <div class="text-sm text-gray-600">${skill.desc_skill}</div>
+                                            <div class="text-xs mt-1">
+                                                ⚡ ${skill.e_cost_skill} | 🗡️ ${skill.power_skill}
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
                     <input type="submit" value="Enregistrer" class="button-default w-fit mx-auto">
                 </form>
             </div>
@@ -272,13 +317,19 @@
 
         document.getElementById("edit-card-form").onsubmit = function (e) {
             e.preventDefault();
-            updateCard(cardId, new FormData(this));
+            const formData = new FormData(this);
+
+            // Récupération des compétences sélectionnées
+            const selectedSkills = [...this.querySelectorAll('input[name="skills"]:checked')]
+                .map(cb => parseInt(cb.value));
+
+            updateCard(cardId, formData, selectedSkills);
         };
 
         openModal('manager');
     }
 
-    function displayNewCardForm(categories, rarities) {
+    function displayNewCardForm(categories, rarities, skills) {
         const modalBody = document.querySelector("#modal-manager .modal-body");
 
         modalBody.innerHTML = `
@@ -320,6 +371,25 @@
                             `).join('')}
                         </select>
                     </div>
+                     <div>
+                        <label>Compétences</label>
+                        <div class="space-y-2 max-h-64 overflow-y-auto border p-2 rounded">
+                            ${skills.map(skill => `
+                                <div class="p-2 border rounded shadow-sm bg-gray-50">
+                                    <label class="flex items-start space-x-2">
+                                        <input type="checkbox" name="skills" value="${skill.id_skill}" class="mt-1">
+                                        <div>
+                                            <strong>${skill.name_skill}</strong>
+                                            <div class="text-sm text-gray-600">${skill.desc_skill}</div>
+                                            <div class="text-xs mt-1">
+                                                ⚡ ${skill.e_cost_skill} | 🗡️ ${skill.power_skill}
+                                            </div>
+                                        </div>
+                                    </label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
 
                     <input type="submit" value="Ajouter" class="button-default w-fit mx-auto">
                 </form>
@@ -329,7 +399,12 @@
 
         document.getElementById("new-card-form").onsubmit = function (e) {
             e.preventDefault();
-            addCard(new FormData(this));
+            const formData = new FormData(this);
+
+            // Récupération des compétences sélectionnées
+            const selectedSkills = [...this.querySelectorAll('input[name="skills"]:checked')]
+                .map(cb => parseInt(cb.value));
+            addCard(formData, selectedSkills);
         };
 
         openModal('manager');
@@ -439,7 +514,7 @@
             </span>
         </td>
         <td class="px-4 py-2">${card.nom_cat}</td>
-        <td class="px-4 py-2">${card.rarity}</td>
+        <td class="px-4 py-2">${card.id_rarity}</td>
         <td class="px-4 py-2">${card.pv_card}</td>
         <td class="px-4 py-2">${card.date_release}</td>
         <td class="flex px-4 py-2 space-x-2">
@@ -462,6 +537,7 @@
         </td>
         <td class="px-4 py-2">${skill.desc_skill}</td>
         <td class="px-4 py-2">${skill.power_skill}</td>
+        <td class="px-4 py-2">${skill.e_cost_skill}</td>
         <td class="flex px-4 py-2 space-x-2">
             <button onclick="openEditSkill(${skill.id_skill})" class="bg-(--primary-color) hover:bg-yellow-500 flex-1 button-action"><i class="fa-solid fa-pen"></i></button>
             <button onclick="deleteRow(${skill.id_skill})" class="bg-(--red-color) hover:bg-red-600 flex-1 button-action"><i class="fa-solid fa-trash"></i></button>
