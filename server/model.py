@@ -20,22 +20,17 @@ mydb = mysql.connector.connect(
 # )
 mycursor = mydb.cursor(dictionary=True)
 
+
 # *************************************************
-# ******************* FUNCTIONS *******************
+# **************** CHECK EXISTING *****************
 # *************************************************
 
-def test():
-    sql = "SELECT * FROM user"
-    mycursor.execute(sql)
-    return mycursor.fetchall()
-
-# ************ Connexion / Inscription ************
-
-def createUser(id, username, password):
-    sql = "INSERT INTO user (id_user, pseudo_user, mdp_user) VALUES (%s, %s, %s)"
-    val = (id, username, password)
+def checkPassword(id, password):
+    sql = "SELECT * FROM user WHERE id_user = %s AND mdp_user = %s"
+    val = (id, password)
     mycursor.execute(sql, val)
-    mydb.commit()
+    result = mycursor.fetchone()
+    return result is not None
 
 def checkUser(id):
     sql = "SELECT id_user FROM user WHERE id_user = %s"
@@ -44,12 +39,16 @@ def checkUser(id):
     result = mycursor.fetchone()
     return result is not None # true is user founded, else false
 
-def checkPassword(id, password):
-    sql = "SELECT * FROM user WHERE id_user = %s AND mdp_user = %s"
-    val = (id, password)
+def checkCardExists(id):
+    sql = "SELECT id_card FROM card WHERE id_card = %s"
+    val = (id,)
     mycursor.execute(sql, val)
     result = mycursor.fetchone()
-    return result is not None
+    return result is not None  # true if card exists, else false
+
+# *************************************************
+# ********************** GET **********************
+# *************************************************
 
 def getUserPseudo(id):
     sql = "SELECT pseudo_user FROM user WHERE id_user = %s"
@@ -67,21 +66,19 @@ def getUserAdminStatus(id):
     print(result)
     return result['is_admin'] if result else None
 
-# ************ Booster ************
-
-def createBooster():
-    sql = "SELECR * FROM rarity"
-    mycursor.execute(sql)
-    allRarity = mycursor.fetchall()
-
-# ************ Cards ************
-
 def getCardById(id):
     sql = "SELECT * from card WHERE id_card = %s"
     val = (id,)
     mycursor.execute(sql, val)
     card = mycursor.fetchone()
     return card
+
+def getSkillById(id):
+    sql = "SELECT * from skill WHERE id_skill = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+    skill = mycursor.fetchone()
+    return skill
 
 def get_all_cards(id = None):
     
@@ -100,7 +97,6 @@ def get_all_cards(id = None):
     return cards
 
 def get_all_skills(id = None):
-    
     if id is None:
         sql = "SELECT * FROM skill"
         mycursor.execute(sql)
@@ -110,8 +106,11 @@ def get_all_skills(id = None):
         val = (id,)
         mycursor.execute(sql, val)
 
-    cards = mycursor.fetchall()
-    return cards
+    skills = mycursor.fetchall()
+
+    print("Données récupérées :", skills)
+
+    return skills
 
 def get_all_rarities():
     sql = "SELECT * FROM rarity"
@@ -124,3 +123,81 @@ def get_all_categories():
     mycursor.execute(sql)
     rarities = mycursor.fetchall()
     return rarities
+
+# ************ CREATE ************
+
+def createUser(id, username, password):
+    sql = "INSERT INTO user (id_user, pseudo_user, mdp_user) VALUES (%s, %s, %s)"
+    val = (id, username, password)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def createCard(name, pv, img, cat, rar):
+    sql = "INSERT INTO card (name_card, pv_card, image_card, id_cat, id_rarity, date_release) VALUES (%s, %s, %s, %s, %s, NOW())"
+    val = (name, pv, img, cat, rar)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+    last_id = mycursor.lastrowid
+
+    sql = "SELECT c.*, cat.nom_cat AS category FROM card c LEFT JOIN category cat ON c.id_cat = cat.id_cat WHERE c.id_card = %s"
+    val = (last_id,)
+    mycursor.execute(sql, val)
+    added_card = mycursor.fetchone()
+
+    return added_card
+
+def createSkill(name, desc, pow, cost):
+    sql = "INSERT INTO skill (name_skill, desc_skill, power_skill, e_cost_skill) VALUES (%s, %s, %s, %s)"
+    val = (name, desc, pow, cost)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+    last_id = mycursor.lastrowid
+
+    added_skill = getSkillById(last_id)
+
+    return added_skill
+
+def createBooster():
+    sql = "SELECR * FROM rarity"
+    mycursor.execute(sql)
+    allRarity = mycursor.fetchall()
+
+# ************ UPDATE ************
+
+def updateCard(id, name, pv, img, cat, rar):
+    sql = "UPDATE card SET name_card = %s, pv_card = %s, image_card = %s, id_rarity = %s, id_cat = %s WHERE id_card = %s"
+    val = (name, pv, img, cat, rar, id)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def updateSkill(id, name, desc, pow, cost):
+    sql = "UPDATE skill SET name_skill = %s, desc_skill = %s, power_skill = %s, e_cost_skill = %s WHERE id_skill = %s"
+    val = (name, desc, pow, cost, id)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+
+# ************ DELETE ************
+
+def deleteCard(id):
+    # Les delete on cascade sont activés
+    sql = "DELETE FROM card WHERE id_card = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def deleteSkill(id):
+    # Les delete on cascade sont activés
+    sql = "DELETE FROM skill WHERE id_skill = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def deleteUser(id):
+    # Les delete on cascade sont activés
+    sql = "DELETE FROM user WHERE id_user = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+    mydb.commit()

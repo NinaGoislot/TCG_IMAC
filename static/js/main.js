@@ -15,14 +15,13 @@
 
 let sortState = {};
 
-function sortTable(columnIndex) {
-  const table = document.querySelector("table tbody");
-  const rows = Array.from(table.rows);
+function sortTable(columnIndex, thElement) {
+  const table = thElement.closest("table");
+  const tbody = table.querySelector("tbody");
+  const rows = Array.from(tbody.rows);
 
-  // Détermine si le contenu est numérique
   const isNumeric = !isNaN(rows[0].cells[columnIndex].innerText.trim());
 
-  // Alterner entre croissant/décroissant
   const currentState = sortState[columnIndex] || 'asc';
   const newState = currentState === 'asc' ? 'desc' : 'asc';
   sortState[columnIndex] = newState;
@@ -42,5 +41,5 @@ function sortTable(columnIndex) {
     }
   });
 
-  rows.forEach(row => table.appendChild(row));
+  rows.forEach(row => tbody.appendChild(row));
 }

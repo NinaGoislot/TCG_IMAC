@@ -5,13 +5,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/output.css">
-    <script src="../static/js/main.js"></script>
+    <script defer src="{{ url_for('static', filename='js/modal.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/api_table.js') }}"></script>
+    <!-- <script defer src="{{ url_for('static', filename='js/api_modal.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/main.js') }}"></script> -->
     <script src="https://kit.fontawesome.com/6a27157276.js" crossorigin="anonymous"></script>
     <title>TCG IMAC</title>
 </head>
 
-<body class="bg-default ">
-    <main class="">
+
+<body class="bg-default flex justify-center items-center w-full relative">
+    <!-- Overlay -->
+    <div id="modal-overlay" class="absolute hidden top-0 left-0 inset-0 bg-black opacity-60 z-40"></div>
+
+    <!-- Modal Form  -->
+    <div id="modal-manager" class="absolute z-50 hidden">
+        <div class="bg-(--light-primary-color) rounded-md p-6 w-full shadow-lg relative">
+            <button class="absolute aspect-square flex justify-center items-center p-2 top-3 right-4 text-gray-600 hover:text-white hover:bg-(--red-color) rounded-full anim-zoom text-xl cursor-pointer"
+                title="Fermer le modal" onclick="closeModal('manager')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+           <div class="modal-body flex flex-col gap-10 justify-center items-center"><!-- Le form JS est ajouté iciiii --></div>
+        </div>
+    </div>
+
+    <main class="w-full">
         <nav class="flex justify-end">
             <nav class="flex justify-end gap-5">
                 {% if session["is_connected"] %}
@@ -27,9 +45,10 @@
             <div class="w-1/2 max-w-6xl py-8 px-4">
                 <!-- Bouton de création -->
                 <div class="mb-4 flex justify-end">
-                    <a href="card.html" class="bg-(--secondary-color) hover:bg-(--secondary-color-hover) font-semibold button-action">
+                    <button  onclick="openNewCard()"
+                        class="bg-(--secondary-color) hover:bg-(--secondary-color-hover) font-semibold button-action">
                         + Nouvelle carte
-                    </a>
+                    </button>
                 </div>
 
                 <!-- Tableau -->
@@ -37,38 +56,21 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(0)">ID <i class="fa-solid fa-sort"></i></th>
+                                onclick="sortTable(0, this)">ID <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nom</th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(2)">Catégorie <i class="fa-solid fa-sort"></i></th>
+                                onclick="sortTable(2, this)">Catégorie <i class="fa-solid fa-sort"></i></th>
+                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
+                                onclick="sortTable(3, this)">Rareté <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(3)">PV <i class="fa-solid fa-sort"></i></th>
+                                onclick="sortTable(4, this)">PV <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(4)">Créée <i class="fa-solid fa-sort"></i></th>
+                                onclick="sortTable(5, this)">Créée <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 text-sm">
-                        {% for card in cards %}
-                        <tr class="">
-                            <td class="px-4 py-2">{{ card.id_card }}</td>
-                            <td class="px-4 py-2">
-                                <span
-                                    class="border-b border-dotted border-gray-400 cursor-pointer hover:text-blue-600">{{card.name_card}}</span>
-                            </td>
-                            <td class="px-4 py-2">{{ card.category }}</td>
-                            <td class="px-4 py-2">{{ card.pv_card }}</td>
-                            <td class="px-4 py-2">{{ card.date_release }}</td>
-                            <td class="flex px-4 py-2 space-x-2">
-                                <a href="/cardManager/editCard/{{ card.id_card }}" title="Modifier la carte"
-                                    class="bg-yellow-400 hover:bg-yellow-500 flex-1 button-action"><i
-                                        class="fa-solid fa-pen"></i></a>
-                                <button onclick="deleteRow(this)" title="Supprimer la carte"
-                                    class="bg-red-500 hover:bg-red-600 flex-1 button-action"><i
-                                        class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                    <tbody id="card-list" class="divide-y divide-gray-200 text-sm">
+                        
                     </tbody>
                 </table>
             </div>
@@ -76,9 +78,10 @@
             <div class="w-1/2 max-w-6xl py-8 px-4">
                 <!-- Bouton de création -->
                 <div class="mb-4 flex justify-end">
-                    <a href="card.html" class="bg-(--secondary-color) hover:bg-(--secondary-color-hover) font-semibold button-action">
+                    <button onclick="displayNewSkillForm()"
+                        class="bg-(--secondary-color) hover:bg-(--secondary-color-hover) font-semibold button-action">
                         + Nouvelle compétence
-                    </a>
+                </button>
                 </div>
 
                 <!-- Tableau -->
@@ -86,38 +89,19 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(0)">ID <i class="fa-solid fa-sort"></i></th>
+                                onclick="sortTable(0, this)">ID <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Nom</th>
+                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer">Desription
+                            </th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(3)">Desription <i class="fa-solid fa-sort"></i></th>
+                                onclick="sortTable(3, this)">Puissance <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(4)">Puissance <i class="fa-solid fa-sort"></i></th>
-                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700 cursor-pointer"
-                                onclick="sortTable(4)">Coût <i class="fa-solid fa-sort"></i></th>
+                                onclick="sortTable(4, this)">Coût <i class="fa-solid fa-sort"></i></th>
                             <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 text-sm">
-                        {% for skill in skills %}
-                        <tr class="">
-                            <td class="px-4 py-2">{{ skill.id_skill }}</td>
-                            <td class="px-4 py-2">
-                                <span
-                                    class="border-b border-dotted border-gray-400 cursor-pointer hover:text-blue-600">{{skill.name_skill}}</span>
-                            </td>
-                            <td class="px-4 py-2">{{ skill.desc_skill }}</td>
-                            <td class="px-4 py-2">{{ skill.power_skill }}</td>
-                            <td class="px-4 py-2">{{ skill.e_cost_skill }}</td>
-                            <td class="flex px-4 py-2 space-x-2">
-                                <a href="/cardManager/editSkill/{{ skill.id_skill }}" title="Modifier la carte"
-                                    class="bg-yellow-400 hover:bg-yellow-500 flex-1 button-action"><i
-                                        class="fa-solid fa-pen"></i></a>
-                                <button onclick="deleteRow(this)" title="Supprimer la carte"
-                                    class="bg-red-500 hover:bg-red-600 flex-1 button-action"><i
-                                        class="fa-solid fa-trash"></i></button>
-                            </td>
-                        </tr>
-                        {% endfor %}
+                    <tbody id="skill-list" class="divide-y divide-gray-200 text-sm">
+                        
                     </tbody>
                 </table>
             </div>

@@ -2,10 +2,13 @@
 
 :root {
     --primary-color: #FFBB4E;
-    --primary-color-hover: #dda54b;
+    --light-primary-color: #ffe5bc;
+    --primary-color-hover: #ebaa43;
     --dark-color: #0D0A08;
+    --light-secondary-color: #d9d1db;
     --secondary-color: #631875;
     --secondary-color-hover: #420c50;
+    --red-color: #c92d2d;
 }
 
 body {
@@ -20,7 +23,7 @@ main {
     @apply text-white text-center italic opacity-50;
 }
 .button-default {
-    @apply bg-(--primary-color) text-center font-bold py-2 px-4 rounded text-(--dark-color) hover:bg-(--primary-color-hover) hover:scale-105 transition-colors duration-300;
+    @apply bg-(--primary-color) text-center font-bold py-2 px-4 rounded text-(--dark-color) hover:bg-(--primary-color-hover) hover:scale-105 transition-colors duration-300 cursor-pointer;
 }
 
 .button-action {
@@ -69,6 +72,36 @@ main {
 }
 
 .input-default {
-    @apply bg-gray-400 rounded p-3  border border-gray-600 focus:outline-none focus:ring-2;
+    @apply bg-(--light-secondary-color) rounded p-3  border border-gray-600 focus:outline-none focus:ring-2;
 }
 
+.anim-zoom {
+  @apply hover:scale-105 transition-transform duration-300 ease-in-out;
+}
+
+.form-de-fou {
+  @apply flex justify-center items-center gap-10;
+}
+
+.form-de-fou form {
+  @apply flex flex-col gap-6;
+}
+
+.form-de-fou form>div {
+  @apply flex flex-col;
+}
+
+.form-de-fou form>div>label {
+  @apply text-(--dark-color);
+}
+.form-de-fou form>div>input, .form-de-fou form>div>select {
+  @apply min-w-[500px] focus:ring-(--primary-color);
+}
+
+.form-de-fou form>div>select {
+  @apply bg-(--light-secondary-color) rounded p-3 border border-gray-600 focus:outline-none focus:ring-2;
+}
+
+.h1-form {
+  @apply text-3xl font-bold mb-4 text-(--dark-color);
+}

@@ -88,6 +88,14 @@ def loggingOut():
 
 # ************ CardManager ************
 
+def createCard():
+    skills = model.get_all_skills()
+    rarities = model.get_all_rarities()
+    categories = model.get_all_categories()
+    card = {}
+
+    return render_template('one_card.html', card=card, skills=skills, rarities=rarities, categories=categories)
+
 def editCard(id):
     card = model.getCardById(id)
     skills = model.get_all_skills()
@@ -95,3 +103,40 @@ def editCard(id):
     categories = model.get_all_categories()
 
     return render_template('one_card.html', card=card, skills=skills, rarities=rarities,categories=categories)
+
+def editSkill(id):
+    skill = model.getSkillById()
+
+    return render_template('one_skill.html', skill=skill)
+
+def applyEditCard(id, data):
+    name = data.get("name_card")
+    pv = data.get("pv_card")
+    img = data.get("image_card")
+    cat = data.get("category")
+    rar = data.get("rarity")
+
+    if (model.checkCardExists(id)) :
+        model.createCard(name, pv, img, cat, rar)
+    else :
+        model.updateCard(id, name, pv, img, cat, rar)
+    
+    return redirect("/manageCard", code=302)
+
+def applyEditSkill(id, data):
+    name = data.get("name_skill")
+    desc = data.get("desc_skill")
+    pow = data.get("power_skill")
+    cost = data.get("cost_skill")
+
+    model.updateCard(id, name, desc, pow, cost)
+
+    return redirect("/manageCard", code=302)
+
+def deleteCard(id):
+    model.deleteCard(id)
+    return redirect("/manageCard", code=302)
+
+def deleteSkill(id):
+    model.deleteSkill(id)
+    return redirect("/manageCard", code=302)

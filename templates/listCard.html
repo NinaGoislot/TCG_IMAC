@@ -28,7 +28,7 @@
             <!-- Carte personnage -->
             {% for card in cards %}
             <article
-                class="group relative w-48 aspect-[257/364] rounded-lg shadow-lg cursor-pointer hover:scale-105 transition-transform duration-300 ease-in-out"
+                class="group relative w-48 aspect-[257/364] rounded-lg shadow-lg cursor-pointer anim-zoom"
                 onclick="toggleSkills(this)">
                 {% if card.image_card%}
                     {% if not card.image_is_ext %}

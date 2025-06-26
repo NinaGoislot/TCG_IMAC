@@ -23,7 +23,7 @@
         </nav>
 
         <div class="flex flex-col gap-10 justify-center items-center">
-            <h1 class="text-3xl font-bold mb-4 text-white">Modifier la carte</h1>
+            <h1 class="text-3xl font-bold mb-4 text-white">{% if card.id_card %}Modifier la carte{% else %}Création d'une carte{% endif %}</h1>
             <div class="flex justify-center items-center gap-10">
                  {% if card.image_card %} 
                   <img src="{{ url_for('static', filename='images/' + card.image_card) }}" alt=""
@@ -31,17 +31,16 @@
                  {% endif %}
                
                 <div class="flex flex-col">
-                    <form method="post" action="/cardManager/editCard/{{ card.id_card }}" class="flex flex-col gap-6">
-
+                    <form method="post" action="/cardManager/applyEditCard/{% if card.id_card %}{{ card.id_card }}{% else %}None{% endif %}" class="flex flex-col gap-6">
                         <div class="flex flex-col">
                             <label for="name_card" class="text-white">Nom de la carte</label>
-                            <input type="text" name="name_card" value="{{ card.name_card }}" placeholder="Nom"
+                            <input type="text" name="name_card" placeholder="Nom"
                                 {% if card.name_card %} value="{{card.name_card}}" {% endif %} required
                                 class="w-full input-default focus:ring-(--primary-color)">
                         </div>
                         <div class="flex flex-col">
                             <label for="pv_card" class="text-white">Points de vie</label>
-                            <input type="number" name="pv_card" value="{{ card.pv_card }}" placeholder="PV"
+                            <input type="number" name="pv_card" placeholder="PV"
                                 {% if card.pv_card %} value="{{card.pv_card}}" {% endif %} required
                                 class="w-full input-default focus:ring-(--primary-color)">
                         </div>
@@ -74,10 +73,8 @@
                                 {% endfor %}
                             </select>
                         </div>
-
-                        <button type="submit"
-                            class="w-full bg-(--primary-color) hover:bg-(--primary-color-hover) button-action">Enregistrer
-                            les modifications</button>
+                        <input type="submit" value="Enregistrer"
+                            class="w-full bg-(--primary-color) hover:bg-(--primary-color-hover) button-action">
                     </form>
                 </div>
             </div>
