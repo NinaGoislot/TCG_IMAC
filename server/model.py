@@ -101,6 +101,13 @@ def getUserById(id):
     user = mycursor.fetchone()
     return user
 
+def getDeckById(id):
+    sql = "SELECT * from deck WHERE id_deck = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+    deck = mycursor.fetchone()
+    return deck
+
 def get_all_cards(id = None):
     
     if id is None:
@@ -167,6 +174,21 @@ def getCardsByRarity(id_rarity):
     result = mycursor.fetchall()
     return result
 
+def getCardsByDeckUser(id_user, id_deck):
+    sql = "SELECT c.*, (c_d.id_card IS NOT NULL) AS assigned FROM card AS c JOIN cardPerUser AS c_u ON c_u.id_card = c.id_card LEFT JOIN cardPerDeck c_d ON c.id_card = c_d.id_card AND c_d.id_deck = %s WHERE c_u.id_user = %s"
+    val = (id_deck, id_user)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchall()
+    return result
+
+def getCardsByUser(id_user):
+    sql = "SELECT c.* FROM card AS c JOIN cardPerUser AS c_u ON c_u.id_card = c.id_card WHERE c_u.id_user = %s"
+    val = (id_user,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchall()
+    return result
+
+
 def getUserLastBooster(id_user):
     sql = "SELECT last_booster FROM user WHERE id_user = %s"
     val = (id_user,)
@@ -185,7 +207,7 @@ def nbCardsBySkills():
     result = mycursor.fetchall()
     return result
 
-def cardsByUsers():
+def usersByCards():
     sql = "SELECT c.name_card, u.id_user, c_u.amount_card" \
     " FROM cardPerUser c_u " \
     " JOIN card c ON c.id_card = c_u.id_card " \
@@ -193,6 +215,16 @@ def cardsByUsers():
     " ORDER BY c.name_card"
     mycursor.execute(sql)
     result = mycursor.fetchall()
+    return result
+
+def decksByUser(id_user):
+    sql = "SELECT * FROM deck WHERE id_user = %s"
+    val = (id_user,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchall()
+    
+    if not result:
+        return None
     return result
 
 # *************************************************
@@ -265,6 +297,30 @@ def addCardToUser(user_id, card_id):
 
     mydb.commit()
 
+def createDeck(name, id_user, cards_ids):
+    # Créationd e la carte
+    sql = "INSERT INTO deck (name_deck, id_user) VALUES (%s, %s)"
+    val = (name,id_user)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+    last_id = mycursor.lastrowid
+
+    # Insertion des cartes
+    for card_id in cards_ids:
+        sql = "INSERT INTO cardPerDeck (id_deck, id_card) VALUES (%s, %s)"
+        val = (last_id, int(card_id))
+        mycursor.execute(sql, val)
+
+    mydb.commit()
+
+    sql = "SELECT * FROM deck WHERE id_deck = %s"
+    val = (last_id,)
+    mycursor.execute(sql, val)
+    addedDeck = mycursor.fetchone()
+
+    return addedDeck
+
 
 
 # *************************************************
@@ -321,6 +377,26 @@ def updateUser(id, username, is_admin, mdp):
     mycursor.execute(sql, val)
     mydb.commit()
 
+def updateDeck(id, name, cards_ids):
+
+    # Update du deck
+    sql = "UPDATE deck SET name_deck = %s  WHERE id_deck = %s"
+    val = (name, id)
+    mycursor.execute(sql, val)
+
+    # Delete de tous les cards associés à cet deck
+    sql = "DELETE FROM cardPerDeck WHERE id_deck = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+
+    # Insertion des nouvelles compétences
+    for card_id in cards_ids:
+        sql = "INSERT INTO cardPerDeck (id_deck, id_card) VALUES (%s, %s)"
+        val = (id, int(card_id))
+        mycursor.execute(sql, val)
+
+    mydb.commit()
+
 
 def setLastBoosterTime(user_id):
     now = datetime.now().time()
@@ -350,5 +426,31 @@ def deleteUser(id):
     # Les delete on cascade sont activés
     sql = "DELETE FROM user WHERE id_user = %s"
     val = (id,)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def deleteDeck(id):
+    # Les delete on cascade sont activés
+    sql = "DELETE FROM deck WHERE id_deck = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def deleteCardsUser(id_user):
+    # Les delete on cascade sont activés
+    sql = "DELETE FROM cardPerUser WHERE id_user = %s"
+    val = (id_user,)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def deleteDecksUsers(id_user):
+    sql = "DELETE FROM deck WHERE id_user = %s"
+    val = (id_user,)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def deleteSkillsCard(id_card):
+    sql = "DELETE FROM skillPerCard WHERE id_card = %s"
+    val = (id_card,)
     mycursor.execute(sql, val)
     mydb.commit()

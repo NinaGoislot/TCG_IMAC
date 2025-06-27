@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/output.css">
+    <script defer src="{{ url_for('static', filename='js/modal.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/api_deck.js') }}"></script>
+    <script src="https://kit.fontawesome.com/6a27157276.js" crossorigin="anonymous"></script>
+    <title>TCG IMAC</title>
+</head>
+
+
+<body class="bg-default flex justify-center items-center w-full relative">
+    <!-- Overlay -->
+    <div id="modal-overlay" class="absolute hidden top-0 left-0 inset-0 bg-black opacity-60 z-40"></div>
+
+    <!-- Modal Form  -->
+    <div id="modal-manager" class="absolute z-50 hidden">
+        <div class="bg-(--light-primary-color) rounded-md p-6 w-full shadow-lg relative">
+            <button
+                class="absolute aspect-square flex justify-center items-center p-2 top-3 right-4 text-gray-600 hover:text-white hover:bg-(--red-color) rounded-full anim-zoom text-xl cursor-pointer"
+                title="Fermer le modal" onclick="closeModal('manager')">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h2>Modifier Deck</h2>
+            <div class="modal-body flex flex-col gap-10 justify-center items-center">
+                <!-- Le form JS est ajouté iciiii -->
+            </div>
+        </div>
+    </div>
+
+    <main class="w-full">
+        <nav class="flex justify-end">
+            <nav class="flex justify-end gap-5">
+                {% if session["is_connected"] %}
+                <a href="/deconnexion" class="button-default" title="Se déconnecter"><i
+                        class="fa-solid fa-right-from-bracket"></i></a>
+                {% else %}
+                <a href="/connexion" class="button-default">Connexion</a>
+                {% endif %}
+                {% if session["is_admin"] %}
+                <a href="/cardManager" class="button-default">Manage cards</a>
+                {% endif %}
+            </nav>
+        </nav>
+
+        <div class="flex justify-center items-center">
+            <div class="w-1/2 max-w-6xl py-8 px-4">
+                <!-- Bouton de création -->
+                <div class="mb-4 flex justify-center">
+                    <button onclick="openNewDeck()"
+                        class="bg-(--secondary-color) hover:bg-(--secondary-color-hover) font-semibold button-action">
+                        + Nouveau deck
+                    </button>
+                </div>
+
+                <div id="deck-list" class="deck-list">
+                    <!-- Ici la liste des decks dynamiquement générée -->
+                </div>
+            </div>
+        </div>
+
+        <p class="mentions">Projet d'architecture web en IMAC 1 | by Nina GOISLOT | 23 juin
+            2025
+        </p>
+    </main>
+</body>
+
+</html>

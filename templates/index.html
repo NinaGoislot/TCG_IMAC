@@ -37,10 +37,12 @@
                 {% if session["is_connected"] %}
                 <a href="/booster" class="button-default w-full">Open booster</a>
                 {% endif %}
-                <a href="" class="button-default w-full">Battle</a>
+                <button onclick="alert('Indisponible pour le moment')" class="button-default w-full">
+                    Battle
+                </button>
                 {% if session["is_connected"] %}
                 <div class="flex gap-5 w-full">
-                    <a href="" class="button-default text-center w-1/2">Decks</a>
+                    <a href="/deck" class="button-default text-center w-1/2">Decks</a>
                     <a href="/listCard" class="button-default text-center w-1/2">Cards</a>
                 </div>
                 {% endif %}

@@ -58,4 +58,10 @@ def listCard():
 def booster():
     return controller.goBooster()
 
+# ****** Deck page *******
+
+@app.route("/deck")
+def deck():
+    return controller.goDecks()
+
 

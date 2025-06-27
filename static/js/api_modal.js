@@ -329,7 +329,7 @@
         openModal('manager');
     }
 
-    function displayNewCardForm(categories, rarities, skills) {
+    function displayNewCardForm(cards) {
         const modalBody = document.querySelector("#modal-manager .modal-body");
 
         modalBody.innerHTML = `

@@ -27,6 +27,9 @@ def goManageCard():
     skills = model.get_all_skills()
     return render_template('manageCard.html', cards=cards, skills=skills)
 
+def goDecks():
+    return render_template('deck.html')
+
 
 # *************************************************
 # ******************* FUNCTIONS *******************

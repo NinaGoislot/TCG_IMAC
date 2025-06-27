@@ -177,6 +177,44 @@ def get_users_by_cards():
 
     return jsonify(users_cards)
 
+@api_app.route("/decks", methods=["GET"])
+def get_decks_by_user():
+    id_user = session["id_user"]
+    decks = model.decksByUser(id_user)
+
+    if not decks:
+        return jsonify({"error": "Decks not found"}), 404
+
+    return jsonify(decks)
+
+@api_app.route("/cards/user", methods=["GET"])
+def get_cards_by_user():
+    id_user = session["id_user"]
+    cards = model.getCardsByUser(id_user)
+
+    if not cards:
+        return jsonify({"error": "Cards not found"}), 404
+
+    return jsonify(cards)
+
+@api_app.route("/decks/<int:id_deck>", methods=["GET"])
+def get_deck_by_id(id_deck):
+    deck = model.getDeckById(id_deck)
+
+    if not deck:
+        return jsonify({"error": "Deck not found"}), 404
+
+    return jsonify(deck)
+
+@api_app.route("/decks/<int:id_deck>/possibleCards", methods=["GET"])
+def get_possible_cards_in_deck(id_deck):
+    id_user = session["id_user"]
+    cards = model.getCardsByDeckUser(id_user, id_deck)
+
+    if not cards:
+        return jsonify({"error": "Cards in deck not found"}), 404
+
+    return jsonify(cards)
 
 
 # *************************************************
@@ -241,8 +279,18 @@ def update_user(id):
     pw = data.get("password")
     admin = data.get("is_admin")
 
-    model.updateUserMdp(id, username, admin, pw)
+    model.updateUser(id, username, admin, pw)
     return jsonify({"message": "Utilisateur mis à jour"})
+
+@api_app.route("/decks/<int:id_deck>", methods=["PUT"])
+def update_deck(id_deck):
+    data = request.json
+    name = data.get("name_deck")
+    cards_ids = data.get("cards", [])
+
+    model.updateDeck(id_deck, name, cards_ids)
+    return jsonify({"message": "Deck mis à jour"})
+
 
 
 # *************************************************
@@ -290,6 +338,18 @@ def add_User():
 
     return jsonify({"message": "Utilisateur ajouté"})
 
+@api_app.route("/deck", methods=["POST"])
+def add_Deck():
+    data = request.json
+    id_user = session["id_user"]
+
+    name = data.get("name_deck")
+    cards_ids = data.get("cards", [])
+
+    addedDeck = model.createDeck(name, id_user, cards_ids)
+
+    return jsonify(addedDeck)
+
 # *************************************************
 # ******************** DELETE *********************
 # *************************************************
@@ -308,3 +368,25 @@ def delete_skill(id):
 def delete_user(id):
     model.deleteUser(id)
     return jsonify({"message": "Utilisateur supprimé"})
+
+@api_app.route("/deck/<int:id>", methods=["DELETE"])
+def delete_deck(id):
+    model.deleteDeck(id)
+    return jsonify({"message": "Deck supprimé"})
+
+@api_app.route("/user/<id_user>/cards", methods=["DELETE"])
+def delete_cards_of_user(id_user):
+    model.deleteCardsUser(id_user)
+    return jsonify({"message": "Cartes de l'utilisateur supprimées"})
+
+
+@api_app.route("/user/<id_user>/decks", methods=["DELETE"])
+def delete_decks_of_user(id_user):
+    model.deleteDecksUsers(id_user)
+    return jsonify({"message": "Decks de l'utilisateur supprimés"})
+
+
+@api_app.route("/card/<id_user>/skills", methods=["DELETE"])
+def delete_skills_of_card(id_card):
+    model.deleteSkillsCard(id_card)
+    return jsonify({"message": "Compétences de la carte supprimées"})
