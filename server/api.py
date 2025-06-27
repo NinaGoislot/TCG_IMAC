@@ -39,6 +39,62 @@ def get_skill(id):
         "skill": skill
     })
 
+@api_app.route("/user/<int:id>", methods=["GET"])
+def get_user(id):
+    user = model.getUserById(id)
+    if not user:
+        return jsonify({"error": "Usernot found"}), 404
+
+    return jsonify({
+        "user": user
+    })
+
+@api_app.route("/username/<int:id>", methods=["GET"])
+def get_user_pseudo(id):
+    username = model.getUserPseudo(id)
+    if not username:
+        return jsonify({"error": "Username not found"}), 404
+
+    return jsonify({
+        "user": username
+    })
+
+@api_app.route("/getBooster", methods=["GET"])
+def get_booster():
+    id_user = session["id_user"]
+
+    rarities = model.get_all_rarities()
+
+    total_weight = sum(rarity['proba_rarity'] for rarity in rarities)
+    for rarity in rarities:
+        rarity['proba_normalize'] = rarity['proba_rarity'] / total_weight
+
+    def choose_rarity():
+        nb = random.random()
+        cumulative = 0
+        for rarity in rarities:
+            cumulative += rarity['proba_normalize']
+            if nb <= cumulative:
+                return rarity['id_rarity']
+        return rarities[1]
+    
+    cards_drawn = []
+    nb_cards_booster = 3
+
+    for _ in range(nb_cards_booster):
+        rar_id = choose_rarity()
+        cards = model.getCardsByRarity(rar_id)
+        if not cards:
+            continue
+        card = random.choice(cards)
+        cards_drawn.append(card)
+
+        model.addCardToUser(id_user, card['id_card'])
+
+    model.setLastBoosterTime(id_user)
+
+    return jsonify(cards_drawn)
+
 @api_app.route("/categories", methods=["GET"])
 def get_all_categories():
     categories = model.get_all_categories()
@@ -103,41 +159,24 @@ def can_open_booster():
 
     return True
 
-@api_app.route("/getBooster", methods=["GET"])
-def get_booster():
-    id_user = session["id_user"]
+@api_app.route("/skills/nbCards", methods=["GET"])
+def get_cards_by_skill():
+    skills = model.nbCardsBySkills()
 
-    rarities = model.get_all_rarities()
+    if not skills:
+        return jsonify({"error": "skills not found"}), 404
 
-    total_weight = sum(rarity['proba_rarity'] for rarity in rarities)
-    for rarity in rarities:
-        rarity['proba_normalize'] = rarity['proba_rarity'] / total_weight
+    return jsonify(skills)
 
-    def choose_rarity():
-        nb = random.random()
-        cumulative = 0
-        for rarity in rarities:
-            cumulative += rarity['proba_normalize']
-            if nb <= cumulative:
-                return rarity['id_rarity']
-        return rarities[1]
-    
-    cards_drawn = []
-    nb_cards_booster = 3
+@api_app.route("/users/cards", methods=["GET"])
+def get_users_by_cards():
+    users_cards = model.usersByCards()
 
-    for _ in range(nb_cards_booster):
-        rar_id = choose_rarity()
-        cards = model.getCardsByRarity(rar_id)
-        if not cards:
-            continue
-        card = random.choice(cards)
-        cards_drawn.append(card)
+    if not users_cards:
+        return jsonify({"error": "Cards not found"}), 404
 
-        model.addCardToUser(id_user, card['id_card'])
+    return jsonify(users_cards)
 
-    model.setLastBoosterTime(id_user)
-
-    return jsonify(cards_drawn)
 
 
 # *************************************************
@@ -169,6 +208,41 @@ def update_skill(id):
 
     model.updateSkill(id, name, desc, pow, cost)
     return jsonify({"message": "Compétence mise à jour"})
+
+@api_app.route("/user/username/<int:id>", methods=["PUT"])
+def update_user_pseudo(id):
+    data = request.json
+
+    username = data.get("pseudo")
+
+    model.updateUserPseudo(id, username)
+    return jsonify({"message": "Pseudo utilisateur mis à jour"})
+
+@api_app.route("/user/adminStatus/<int:id>", methods=["PUT"])
+def update_admin_status(id):
+    data = request.json
+    is_admin = data.get("is_admin")
+
+    model.updateUserStatus(id, is_admin)
+    return jsonify({"message": "Statut utilisateur mis à jour"})
+
+@api_app.route("/user/password/<int:id>", methods=["PUT"])
+def update_user_password(id):
+    data = request.json
+    pw = data.get("password")
+
+    model.updateUserMdp(id, pw)
+    return jsonify({"message": "Mot de passe utilisateur mis à jour"})
+
+@api_app.route("/user/<int:id>", methods=["PUT"])
+def update_user(id):
+    data = request.json
+    username = data.get("pseudo")
+    pw = data.get("password")
+    admin = data.get("is_admin")
+
+    model.updateUserMdp(id, username, admin, pw)
+    return jsonify({"message": "Utilisateur mis à jour"})
 
 
 # *************************************************
@@ -204,6 +278,18 @@ def add_Skill():
 
     return jsonify(addedSkill)
 
+@api_app.route("/user", methods=["POST"])
+def add_User():
+    data = request.json
+
+    id = data.get("identifiant")
+    username = data.get("pseudo")
+    pw = data.get("password")
+
+    model.createUser(id, username, pw)
+
+    return jsonify({"message": "Utilisateur ajouté"})
+
 # *************************************************
 # ******************** DELETE *********************
 # *************************************************
@@ -217,3 +303,8 @@ def delete_card(id):
 def delete_skill(id):
     model.deleteSkill(id)
     return jsonify({"message": "Compétence supprimée"})
+
+@api_app.route("/user/<int:id>", methods=["DELETE"])
+def delete_user(id):
+    model.deleteUser(id)
+    return jsonify({"message": "Utilisateur supprimé"})

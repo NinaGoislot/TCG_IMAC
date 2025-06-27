@@ -94,6 +94,13 @@ def getSkillById(id):
     skill = mycursor.fetchone()
     return skill
 
+def getUserById(id):
+    sql = "SELECT * from user WHERE id_user = %s"
+    val = (id,)
+    mycursor.execute(sql, val)
+    user = mycursor.fetchone()
+    return user
+
 def get_all_cards(id = None):
     
     if id is None:
@@ -165,6 +172,28 @@ def getUserLastBooster(id_user):
     val = (id_user,)
     mycursor.execute(sql, val)
     result = mycursor.fetchone()
+    return result
+
+def nbCardsBySkills():
+    sql = "SELECT s.name_skill AS nom_competence,COUNT(c.id_card) AS nombre_utilisateurs" \
+    " FROM skill s " \
+    " JOIN skillPercard s_c ON s.id_skill = s_c.id_skill " \
+    " JOIN card c ON c.id_card = s_c.id_skill " \
+    " GROUP BY s.name_skill" \
+    " ORDER BY nombre_utilisateurs DESC"
+    mycursor.execute(sql)
+    result = mycursor.fetchall()
+    return result
+
+def cardsByUsers():
+    sql = "SELECT c.name_card, u.id_user, c_u.amount_card" \
+    " FROM cardPerUser c_u " \
+    " JOIN card c ON c.id_card = c_u.id_card " \
+    " JOIN user u ON u.id_user = c_u.id_user " \
+    " ORDER BY c.name_card"
+    mycursor.execute(sql)
+    result = mycursor.fetchall()
+    return result
 
 # *************************************************
 # ******************** CREATE *********************
@@ -213,6 +242,7 @@ def createSkill(name, desc, pow, cost):
     added_skill = getSkillById(last_id)
 
     return added_skill
+
 
 def addCardToUser(user_id, card_id):
     # Vérifie si user possède déjà la carte
@@ -266,6 +296,31 @@ def updateSkill(id, name, desc, pow, cost):
     val = (name, desc, pow, cost, id)
     mycursor.execute(sql, val)
     mydb.commit()
+
+def updateUserPseudo(id, username):
+    sql = "UPDATE user SET pseudo_user = %s WHERE id_user = %s"
+    val = (username, id)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def updateUserStatus(id, is_admin):
+    sql = "UPDATE user SET is_admin = %s WHERE id_user = %s"
+    val = (is_admin, id)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def updateUserMdp(id, mdp):
+    sql = "UPDATE user SET mdp_user = %s WHERE id_user = %s"
+    val = (mdp, id)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
+def updateUser(id, username, is_admin, mdp):
+    sql = "UPDATE user SET pseudo_user = %s , is_admin = %s, mdp_user = %s WHERE id_user = %s"
+    val = (username, is_admin,mdp, id)
+    mycursor.execute(sql, val)
+    mydb.commit()
+
 
 def setLastBoosterTime(user_id):
     now = datetime.now().time()
