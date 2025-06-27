@@ -11,18 +11,19 @@
 
 <body class="relative overflow-hidden">
 
-  <!-- Fond + overlay -->
-  <div class="absolute inset-0 -z-10">
-    <div class="w-full h-full bg-[url('../images/bg_cards.gif')] bg-cover bg-no-repeat bg-center">
-      <div class="w-full h-full bg-black/60"></div>
+    <!-- Fond + overlay -->
+    <div class="absolute inset-0 -z-10">
+        <div class="w-full h-full bg-[url('../images/bg_cards.gif')] bg-cover bg-no-repeat bg-center">
+            <div class="w-full h-full bg-black/60"></div>
+        </div>
     </div>
-  </div>
 
-  <!-- Contenu  -->
-  <main class="relative z-10">
+    <!-- Contenu  -->
+    <main class="relative z-10">
         <nav class="flex justify-end gap-5">
             {% if session["is_connected"] %}
-            <a href="/deconnexion" title="Se déconnecter" class="button-default"><i class="fa-solid fa-right-from-bracket"></i></a>
+            <a href="/deconnexion" title="Se déconnecter" class="button-default"><i
+                    class="fa-solid fa-right-from-bracket"></i></a>
             {% else %}
             <a href="/connexion" class="button-default">Connexion</a>
             {% endif %}
@@ -33,15 +34,20 @@
         <div class="flex flex-col gap-5 justify-center items-center">
             <h1 class="text-9xl m-10 text-white font-bold">TCG IMAC</h1>
             <div class="flex flex-col items-center gap-5">
+                {% if session["is_connected"] %}
                 <a href="/booster" class="button-default w-full">Open booster</a>
+                {% endif %}
                 <a href="" class="button-default w-full">Battle</a>
+                {% if session["is_connected"] %}
                 <div class="flex gap-5 w-full">
                     <a href="" class="button-default text-center w-1/2">Decks</a>
                     <a href="/listCard" class="button-default text-center w-1/2">Cards</a>
                 </div>
+                {% endif %}
+
             </div>
             {% if session["is_connected"] %}
-                <p class="italic text-white">Bienvenue {{ session["pseudo"] }} !</p>
+            <p class="italic text-white">Bienvenue {{ session["pseudo"] }} !</p>
             {% endif %}
         </div>
 

@@ -13,64 +13,59 @@
 <body class="bg-default ">
     <main>
         <nav class="flex justify-end gap-5">
-        {% if session["is_connected"] %}
-        <a href="/deconnexion" class="button-default" title="Se déconnecter"><i class="fa-solid fa-right-from-bracket"></i></a>
-        {% else %}
-        <a href="/connexion" class="button-default">Connexion</a>
-        {% endif %}
-        {% if session["is_admin"] %}
-        <a href="/cardManager" class="button-default">Manage cards</a>
-        {% endif %}
-    </nav>
-    <div class="flex flex-col gap-15">
+            {% if session["is_connected"] %}
+            <a href="/deconnexion" class="button-default" title="Se déconnecter"><i
+                    class="fa-solid fa-right-from-bracket"></i></a>
+            {% else %}
+            <a href="/connexion" class="button-default">Connexion</a>
+            {% endif %}
+            {% if session["is_admin"] %}
+            <a href="/cardManager" class="button-default">Manage cards</a>
+            {% endif %}
+        </nav>
+        <div class="flex flex-col gap-15">
 
-        <div class="flex gap-10 mx-20">
-            <!-- Carte personnage -->
-            {% for card in cards %}
-            <article
-                class="group relative w-48 aspect-[257/364] rounded-lg shadow-lg cursor-pointer anim-zoom"
-                onclick="toggleSkills(this)">
-                {% if card.image_card%}
-                    {% if not card.image_is_ext %}
-                        <img src="{{ url_for('static', filename='images/' + card.image_card) }}"
-                            class="img-card {% if not card.obtained %}card-not-obtained{% endif %}" />
-                    {% else %}
-                        <img src="{{ card.image_card }}"
-                            class="img-card {% if not card.obtained %}card-not-obtained{% endif %}" />
-                    {% endif %}
-                {% else %}
-                    <img src="{{ url_for('static', filename='images/default.jpeg') }}"
+            <div class="flex flex-wrap justify-center gap-10 mx-20">
+                <!-- Carte personnage -->
+                {% for card in cards %}
+                <article class="group relative w-48 aspect-[257/364] rounded-lg shadow-lg cursor-pointer anim-zoom"
+                    onclick="toggleSkills(this)">
+                    {% if card.image_card%}
+                    <img src="{{ url_for('static', filename='images/' + card.image_card) }}"
                         class="img-card {% if not card.obtained %}card-not-obtained{% endif %}" />
-                {% endif %}
-                <!-- Vie -->
-                <p
-                    class="absolute z-10 -top-4 -right-4 bg-red-600 text-white text-sm font-bold rounded-full w-10 h-10 flex items-center justify-center shadow-lg card-not-obtained">
-                    {{ card.pv_card }}
-                </p>
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/card-default.jpeg') }}"
+                        class="img-card {% if not card.obtained %}card-not-obtained{% endif %}" />
+                    {% endif %}
+                    <!-- Vie -->
+                    <p
+                        class="absolute z-10 -top-4 -right-4 bg-red-600 text-white text-sm font-bold rounded-full w-10 h-10 flex items-center justify-center shadow-lg {% if not card.obtained %}card-not-obtained{% endif %}">
+                        {{ card.pv_card }}
+                    </p>
 
-                <!-- Nom -->
-                <figcaption
-                    class="absolute bottom-0 w-full bg-black/60 text-white text-center text-sm py-1 font-bold z-10 rounded-br-md rounded-bl-md">
-                    {{ card.name_card }}
-                </figcaption>
+                    <!-- Nom -->
+                    <figcaption
+                        class="absolute bottom-0 w-full bg-black/60 text-white text-center text-sm py-1 font-bold z-10 rounded-br-md rounded-bl-md">
+                        {{ card.name_card }}
+                    </figcaption>
 
-                <!-- Encadré compétences -->
-                <div data-skill-popup
-                    class="hidden absolute top-0 left-full ml-4 w-48 bg-white shadow-xl rounded p-2 text-sm z-20"
-                    onclick="event.stopPropagation()">
-                    <p class="font-bold mb-2">Compétences :</p>
-                    <ul class="list-disc pl-5 space-y-1">
-                        <li>Boule de feu</li>
-                        <li>Barrière magique</li>
-                        <li>Résistance mentale</li>
-                    </ul>
-                </div>
-            </article>
-            {% endfor %}
+                    <!-- Encadré compétences -->
+                    <div data-skill-popup
+                        class="hidden absolute top-0 left-full ml-4 w-48 bg-white shadow-xl rounded p-2 text-sm z-20"
+                        onclick="event.stopPropagation()">
+                        <p class="font-bold mb-2">Compétences :</p>
+                        <ul class="list-disc pl-5 space-y-1">
+                            <li>Boule de feu</li>
+                            <li>Barrière magique</li>
+                            <li>Résistance mentale</li>
+                        </ul>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
         </div>
-    </div>
 
-    <p class="mentions">Projet d'architecture web en IMAC 1 | by Nina GOISLOT | 23 juin 2025</p>
+        <p class="mentions">Projet d'architecture web en IMAC 1 | by Nina GOISLOT | 23 juin 2025</p>
     </main>
 </body>
 

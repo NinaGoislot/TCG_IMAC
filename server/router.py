@@ -46,36 +46,6 @@ def deconnexion():
 def cardManager():
     return controller.goManageCard()
 
-@app.route("/cardManager/createCard")
-def createCard():
-    return controller.createCard()
-
-@app.route("/cardManager/editCard/<int:id>")
-def editCard(id):
-    return controller.editCard(id)
-
-@app.route("/cardManager/editSkill/<int:id>")
-def editSkill(id):
-    return controller.editSkill(id)
-
-@app.route("/cardManager/applyEditCard/<int:id>", methods=["POST"])
-def applyEditCard(id):
-    data = request.form
-    return controller.applyEditCard(id, data)
-
-@app.route("/cardManager/applyEditSkill/<int:id>", methods=["POST"])
-def applyEditSkill(id):
-    data = request.form
-    return controller.applyEditSkill(id, data)
-
-@app.route("/cardManager/deleteCard/<int:id>")
-def deleteCard(id):
-    return controller.deleteCard(id)
-
-@app.route("/cardManager/deleteSkill/<int:id>")
-def deleteSkill(id):
-    return controller.deleteSkill(id)
-
 # ******** List page ********
 
 @app.route("/listCard")

@@ -19,7 +19,7 @@ def goConnexion():
     return render_template('connexion.html')
 
 def goMyCards():
-    cards = model.get_all_cards(session["user_id"])
+    cards = model.get_all_cards(session["id_user"])
     return render_template('listCard.html', cards=cards)
 
 def goManageCard():
@@ -35,7 +35,6 @@ def goManageCard():
 # ************ Connexion / Inscription ************
 
 def setAccount(data):
-    global message
     id = data.get("id_user")
     pseudo = data.get("pseudo_user")
     mdp = data.get("mdp_user")
@@ -50,8 +49,6 @@ def setAccount(data):
     return goConnexion()
 
 def coUser(data):
-    # global message 
-    # global userConnected
 
     id = data.get("id_user")
     mdp = data.get("mdp_user")
@@ -71,7 +68,7 @@ def coUser(data):
     pseudo = model.getUserPseudo(id)
     isAdmin = model.getUserAdminStatus(id)
     
-    session["user_id"] = id
+    session["id_user"] = id
     session["pseudo"] = pseudo
     session["is_admin"] = isAdmin
     session["is_connected"] = True
@@ -84,59 +81,3 @@ def loggingOut():
     session.pop('is_admin', default=None)
     session.pop('user_id', default=None)
     return redirect("/", code=302)
-
-
-# ************ CardManager ************
-
-def createCard():
-    skills = model.get_all_skills()
-    rarities = model.get_all_rarities()
-    categories = model.get_all_categories()
-    card = {}
-
-    return render_template('one_card.html', card=card, skills=skills, rarities=rarities, categories=categories)
-
-def editCard(id):
-    card = model.getCardById(id)
-    skills = model.get_all_skills()
-    rarities = model.get_all_rarities()
-    categories = model.get_all_categories()
-
-    return render_template('one_card.html', card=card, skills=skills, rarities=rarities,categories=categories)
-
-def editSkill(id):
-    skill = model.getSkillById()
-
-    return render_template('one_skill.html', skill=skill)
-
-def applyEditCard(id, data):
-    name = data.get("name_card")
-    pv = data.get("pv_card")
-    img = data.get("image_card")
-    cat = data.get("category")
-    rar = data.get("rarity")
-
-    if (model.checkCardExists(id)) :
-        model.createCard(name, pv, img, cat, rar)
-    else :
-        model.updateCard(id, name, pv, img, cat, rar)
-    
-    return redirect("/manageCard", code=302)
-
-def applyEditSkill(id, data):
-    name = data.get("name_skill")
-    desc = data.get("desc_skill")
-    pow = data.get("power_skill")
-    cost = data.get("cost_skill")
-
-    model.updateCard(id, name, desc, pow, cost)
-
-    return redirect("/manageCard", code=302)
-
-def deleteCard(id):
-    model.deleteCard(id)
-    return redirect("/manageCard", code=302)
-
-def deleteSkill(id):
-    model.deleteSkill(id)
-    return redirect("/manageCard", code=302)

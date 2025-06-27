@@ -1,5 +1,6 @@
 from flask import request, jsonify, Blueprint, session
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
+import random
 import model
 
 api_app = Blueprint("api", __name__)
@@ -85,6 +86,59 @@ def get_skills_assigned_card(id):
         return jsonify({"error": "skills not found"}), 404
 
     return jsonify(skills)
+
+@api_app.route("/canOpenBooster", methods=["GET"])
+def can_open_booster():
+    id_user = session["id_user"]
+    last_booster = model.getUserLastBooster(id_user)
+
+    if not last_booster:
+        return True
+
+    now = datetime.now()
+    last_booster_dt = datetime.combine(now.date(), last_booster)
+
+    if (now - last_booster_dt) >= timedelta(minutes=5):
+        return False
+
+    return True
+
+@api_app.route("/getBooster", methods=["GET"])
+def get_booster():
+    id_user = session["id_user"]
+
+    rarities = model.get_all_rarities()
+
+    total_weight = sum(rarity['proba_rarity'] for rarity in rarities)
+    for rarity in rarities:
+        rarity['proba_normalize'] = rarity['proba_rarity'] / total_weight
+
+    def choose_rarity():
+        nb = random.random()
+        cumulative = 0
+        for rarity in rarities:
+            cumulative += rarity['proba_normalize']
+            if nb <= cumulative:
+                return rarity['id_rarity']
+        return rarities[1]
+    
+    cards_drawn = []
+    nb_cards_booster = 3
+
+    for _ in range(nb_cards_booster):
+        rar_id = choose_rarity()
+        cards = model.getCardsByRarity(rar_id)
+        if not cards:
+            continue
+        card = random.choice(cards)
+        cards_drawn.append(card)
+
+        model.addCardToUser(id_user, card['id_card'])
+
+    model.setLastBoosterTime(id_user)
+
+    return jsonify(cards_drawn)
+
 
 # *************************************************
 # ******************** UPDATE *********************

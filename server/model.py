@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import mysql.connector
 
 # *************************************************
@@ -45,6 +46,19 @@ def checkCardExists(id):
     mycursor.execute(sql, val)
     result = mycursor.fetchone()
     return result is not None  # true if card exists, else false
+
+# def checkUserCanOpenBooster(id):
+#     sql = "SELECT last_booster FROM user WHERE id_user = %s"
+#     val = (id,)
+#     mycursor.execute(sql, val)
+#     result = mycursor.fetchone()
+
+#     now = datetime.now()
+#     last_booster_dt = datetime.combine(now.date(), result)
+
+#     if now - last_booster_dt < timedelta(minutes=5):
+#         return False
+#     return True
 
 # *************************************************
 # ********************** GET **********************
@@ -132,6 +146,26 @@ def get_all_categories():
     rarities = mycursor.fetchall()
     return rarities
 
+def getlastBoosterOpening(user_id):
+    sql = "SELECT last_booster FROM user WHERE id_user = %s"
+    val = (user_id,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchone()
+    return result
+
+def getCardsByRarity(id_rarity):
+    sql = "SELECT * FROM card WHERE id_rarity = %s"
+    val = (id_rarity,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchall()
+    return result
+
+def getUserLastBooster(id_user):
+    sql = "SELECT last_booster FROM user WHERE id_user = %s"
+    val = (id_user,)
+    mycursor.execute(sql, val)
+    result = mycursor.fetchone()
+
 # *************************************************
 # ******************** CREATE *********************
 # *************************************************
@@ -180,10 +214,28 @@ def createSkill(name, desc, pow, cost):
 
     return added_skill
 
-def createBooster():
-    sql = "SELECR * FROM rarity"
-    mycursor.execute(sql)
-    allRarity = mycursor.fetchall()
+def addCardToUser(user_id, card_id):
+    # Vérifie si user possède déjà la carte
+    sql = "SELECT amount_card FROM cardPerUser WHERE id_user = %s AND id_card = %s"
+    mycursor.execute(sql, (user_id, card_id))
+    result = mycursor.fetchone()
+
+    if result:
+        print("J'incrémente")
+        # incrémenter amount
+        sql = "UPDATE cardPerUser SET amount_card = amount_card + 1 WHERE id_user = %s AND id_card = %s"
+        val = (user_id, card_id)
+        mycursor.execute(sql, val)
+    else:
+        print("J'ajoute")
+        # insérer nouvelle ligne
+        sql = "INSERT INTO cardPerUser (id_user, id_card, amount_card) VALUES (%s, %s, 1)"
+        val = (user_id, card_id)
+        mycursor.execute(sql, val)
+
+    mydb.commit()
+
+
 
 # *************************************************
 # ******************** UPDATE *********************
@@ -215,6 +267,11 @@ def updateSkill(id, name, desc, pow, cost):
     mycursor.execute(sql, val)
     mydb.commit()
 
+def setLastBoosterTime(user_id):
+    now = datetime.now().time()
+    sql = "UPDATE user SET last_booster = %s WHERE id_user = %s"
+    val = (now, user_id)
+    mycursor.execute(sql, val)
 
 # *************************************************
 # ******************** DELETE *********************
