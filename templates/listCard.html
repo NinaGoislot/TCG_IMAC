@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../static/css/output.css">
     <script src="../static/js/main.js"></script>
+    <script defer src="{{ url_for('static', filename='js/api_listCard.js') }}"></script>
     <script src="https://kit.fontawesome.com/6a27157276.js" crossorigin="anonymous"></script>
     <title>TCG IMAC</title>
 </head>
@@ -28,7 +29,7 @@
             <div class="flex flex-wrap justify-center gap-10 mx-20">
                 <!-- Carte personnage -->
                 {% for card in cards %}
-                <article class="group relative w-48 aspect-[257/364] rounded-lg shadow-lg cursor-pointer anim-zoom"
+                <article data-id="{{ card.id_card }}" class="group relative w-48 aspect-[257/364] rounded-lg shadow-lg cursor-pointer anim-zoom"
                     onclick="toggleSkills(this)">
                     {% if card.image_card%}
                     <img src="{{ url_for('static', filename='images/' + card.image_card) }}"

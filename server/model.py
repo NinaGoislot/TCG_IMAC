@@ -139,13 +139,20 @@ def get_all_skills(id = None):
     return skills
 
 def get_skills_assigned_card(id):
-    # Je récupère les skills d'un outilisateur
+    # Je récupère les skills et les croise avec celles déjà cochée
     sql = "SELECT s.*, (s_c.id_card IS NOT NULL) AS assigned FROM skill AS s LEFT JOIN skillPercard AS s_c ON s.id_skill = s_c.id_skill AND s_c.id_card = %s"
     val = (id,)
     mycursor.execute(sql, val)
 
     skills = mycursor.fetchall()
 
+    return skills
+
+def getSkillsByCard(id_card):
+    sql = "SELECT s.id_skill, s.name_skill FROM skillPercard s_c INNER JOIN skill s ON s_c.id_skill = s.id_skill WHERE s_c.id_card = %s"
+    val = (id_card,)
+    mycursor.execute(sql, val)
+    skills = mycursor.fetchall()
     return skills
 
 def get_all_rarities():
@@ -258,8 +265,6 @@ def createCard(name, pv, img, cat, rar, skill_ids):
     val = (last_id,)
     mycursor.execute(sql, val)
     added_card = mycursor.fetchone()
-
-
 
     return added_card
 

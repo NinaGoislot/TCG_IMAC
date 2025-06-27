@@ -29,6 +29,11 @@ def get_card(id):
         "categories": categories
     })
 
+@api_app.route("/card/<int:id_card>/skills", methods=["GET"])
+def get_card_skills(id_card):
+    skills = model.getSkillsByCard(id_card)
+    return jsonify(skills)
+
 @api_app.route("/skill/<int:id>", methods=["GET"])
 def get_skill(id):
     skill = model.getSkillById(id)
@@ -312,6 +317,19 @@ def add_Card():
     addedCard["date_release"] = addedCard["date_release"].strftime("%Y-%m-%d")
     
     return jsonify(addedCard)
+
+@api_app.route("/user/add_card/<int:id_card>", methods=["POST"])
+def add_card_to_currentUser(id_card):
+    id_user = session["id_user"]
+    model.addCardToUser(id_user, id_card)
+
+    return jsonify({"message": "Carte ajouté à l'utilisateur"})
+
+@api_app.route("/user/<int:id_user>/add_card/<int:id_card>", methods=["POST"])
+def add_card_to_user(id_user, id_card):
+    model.addCardToUser(id_user, id_card)
+
+    return jsonify({"message": "Carte ajouté à l'utilisateur"})
 
 @api_app.route("/skill", methods=["POST"])
 def add_Skill():
